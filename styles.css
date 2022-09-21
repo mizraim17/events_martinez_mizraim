@@ -1,0 +1,7 @@
+body {
+	background-color: blueviolet !important;
+}
+
+.blur-image {
+	filter: blur(11px);
+}
