@@ -12,28 +12,41 @@
     <link rel="stylesheet" href="./styles.css">
   </head>
 
-  <body style="background-color: black;">
+  <body>
+
+    <div class="container margin-5">
+      <div class="row">
+        <div class="col-3"></div>
+        <div class="col-4 colum-list-suspects">
+
+          <p class="tit-list-suspects">Lista de sospechosos</p>
+          <ul id="containerListSuspects" class="list-suspects">
+
+          </ul>
+
+        </div>
+        <div class="col-2">
+          <button id="btnStarPlay" type="button" class="btn btn-success">Comenzar</button>
+          <button id="btnBlur" type="button" class="btn btn-success">Blur character</button>
+        </div>
+        <div class="col-3"></div>
+      </div>
+    </div>
+
+    <div class="container">
+      <div id="containerCharacters" class="row  ">
+
+      </div>
+    </div>
 
     <div class="container">
       <div class="row">
         <div class="col-5"></div>
         <div class="col-2">
-          <button id="btnStarPlay" type="button" class="btn btn-success">Star to play</button>
         </div>
         <div class="col-5"></div>
       </div>
-    </div>
 
-    <div id="containerCharacters" class="row  ">
-
-    </div>
-
-
-    <div class="row">
-      <div class="col-5"></div>
-      <div class="col-2">
-      </div>
-      <div class="col-5"></div>
     </div>
 
     <!-- Modal -->

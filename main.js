@@ -2,6 +2,8 @@
 
 //Variables of games
 
+let containerCharacters;
+
 let selectUser = 0;
 
 const suspectsArray = [
@@ -47,7 +49,7 @@ let genereAssesinMurder = () => {
 
 	console.log(`listNew ${listNew.length}`);
 
-	arrayAssesinDied[1] = suspectsArray[numDiedPerson].nombre;
+	arrayAssesinDied[1] = suspectsArray[numDiedPerson].id;
 	arrayAssesinDied[0] = listNew;
 
 	return arrayAssesinDied;
@@ -55,15 +57,40 @@ let genereAssesinMurder = () => {
 
 let oportunities = [false, false, false];
 
+let generateInstru = (arrWitMurd) => {
+	const TXT_1 = "Adivina el asesino seleciona su número";
+
+	for (element in arrWitMurd) {
+		console.log(
+			`para instru "${arrWitMurd[element].id} ${arrWitMurd[element].nombre}`
+		);
+	}
+
+	instructions = "";
+
+	for (element in arrWitMurd) {
+		instructions =
+			instructions +
+			`${arrWitMurd[element].id}.- ${arrWitMurd[element].nombre}\n`;
+		counter++;
+	}
+
+	return TXT_1 + instructions;
+};
+
 //Generate prompr for inputs values and validate if the user win or lose
 
 let menu = (asseMurder) => {
 	let coins = 0;
 
 	let arrWitMurd = asseMurder[0];
+	let copyArrWitMurd = asseMurder[0];
 
-	console.log("arrWitMurd", arrWitMurd);
-
+	for (element in arrWitMurd) {
+		console.log(
+			`original "${arrWitMurd[element].id}  ${arrWitMurd[element].nombre}`
+		);
+	}
 	let numAssesin = parseInt(doRandom(arrWitMurd));
 
 	let numWeapon = parseInt(doRandom(weaponsArray));
@@ -71,9 +98,9 @@ let menu = (asseMurder) => {
 	let gameWin = 0;
 
 	//Me ayuda a encontrar el misterio y ganar
-	alert(`numAssesin ${numAssesin}`);
-	alert(`numWeapon ${numWeapon}`);
-	alert(`numnumRoomWeapon ${numRoom}`);
+	// alert(`numAssesin ${numAssesin}`);
+	// alert(`numWeapon ${numWeapon}`);
+	// alert(`numnumRoomWeapon ${numRoom}`);
 
 	do {
 		// alert(`oportunities ${oportunities}`);
@@ -106,33 +133,49 @@ let menu = (asseMurder) => {
 
 		switch (selectUser) {
 			case 1:
-				const TXT_1 = "Adivina el asesino seleciona su número";
 				let instructions = "",
 					optiAssesin = 0;
 				counter = 0;
 
-				for (element in arrWitMurd) {
-					instructions =
-						instructions +
-						`${arrWitMurd[element].id}.- ${arrWitMurd[element].nombre}\n`;
-					counter++;
-				}
-
-				instructions + TXT_1;
-
 				console.log("numero asesino", asseMurder[0]);
 
 				do {
+					instructions = generateInstru(arrWitMurd);
+
 					optiAssesin = parseInt(prompt(`${instructions}`));
 					coins++;
+
+					console.log("numAssesin", numAssesin);
+					console.log("optiAssesin", optiAssesin);
+
+					if (copyArrWitMurd[numAssesin].id !== optiAssesin) {
+						for (element in arrWitMurd) {
+							console.log(
+								`antes cut "${arrWitMurd[element].id}  ${arrWitMurd[element].nombre}`
+							);
+						}
+
+						matchSuspects([arrWitMurd[element].id]);
+
+						arrWitMurd = arrWitMurd.filter((item) => item.id !== optiAssesin);
+
+						for (element in arrWitMurd) {
+							console.log(
+								`despues cut "${arrWitMurd[element].id}  ${arrWitMurd[element].nombre}`
+							);
+						}
+
+						paintingCharacters(arrWitMurd);
+						console.log("entro a borrar arrWitMurd", arrWitMurd);
+					}
 
 					// alert(`coins=${coins}`);
 				} while (numAssesin !== optiAssesin && coins < 7);
 
 				if (optiAssesin === numAssesin) {
-					alert(`Correcto fue ${arrWitMurd[numAssesin].nombre}`);
+					alert(`Correcto fue ${copyArrWitMurd[optiAssesin].nombre}`);
 
-					matchSuspects([numAssesin]);
+					// matchSuspects([numAssesin]);
 					selectUser = 0;
 					oportunities[0] = true;
 				} else if (coins === 5) {
@@ -216,7 +259,7 @@ let menu = (asseMurder) => {
 	} while (selectUser !== "s" && coins !== 7 && gameWin !== 3);
 
 	if (coins === 7) {
-		let text_lose = `Perdiste el juego, fue  \n <b> ${arrWitMurd[numAssesin].nombre} </b> mato a
+		let text_lose = `Perdiste el juego, fue  \n <b> ${copyArrWitMurd[numAssesin].nombre} </b> mato a
 			<b>  ${asseMurder[1]} </b>  con la <b> ${weaponsArray[numWeapon]} </b>   en <b>   ${roomsArray[numRoom]} </b> `;
 
 		labelModal = document.getElementById("exampleModalLabel");
@@ -252,37 +295,128 @@ let menu = (asseMurder) => {
 	}
 };
 
-let paintingCharacters = (arrSuspects) => {
-	let i = 0;
+//init
 
-	console.log("arrSuspects", arrSuspects);
+let initElements = () => {
+	containerCharacters = document.getElementById("containerCharacters");
+	containerListSuspects = document.getElementById("containerListSuspects");
+
+	console.log("ini", containerCharacters);
+};
+
+let generateListSuspects = (arrSuspects) => {
+	containerListSuspects.innerHTML = "";
+	arrSuspects.forEach((character) => {
+		let list = document.createElement("li");
+
+		list.innerHTML = `<p> ${character.id}.-${character.nombre} \n </p> `;
+
+		containerListSuspects.appendChild(list);
+	});
+};
+
+let checkAssasin = (asseMurder, idSuspect) => {
+	let arrWitMurd = asseMurder;
+	const copyArrWitMurd = asseMurder;
+
+	for (element in copyArrWitMurd) {
+		console.log(
+			`despues cut "${copyArrWitMurd[element].id}  ${copyArrWitMurd[element].nombre}`
+		);
+	}
+
+	id_assasin = localStorage.getItem("id_assasin");
+
+	console.log("id_assasin", id_assasin);
+
+	let gameWin = 0;
+
+	console.log(
+		"---asesino rela",
+		suspectsArray[id_assasin].id,
+		"--- sospechosos",
+		idSuspect
+	);
+
+	if (suspectsArray[id_assasin].id !== idSuspect) {
+		arrWitMurd = arrWitMurd.filter((item) => item.id !== idSuspect);
+
+		console.log(arrWitMurd);
+
+		paintingCharacters(arrWitMurd);
+		generateListSuspects(arrWitMurd);
+
+		alert(`no es el asesino ${suspectsArray[idSuspect].nombre}`);
+	} else if (suspectsArray[id_assasin].id == idSuspect) {
+		console.log("-------------------------- entro");
+		alert(`si  el asesino ${suspectsArray[idSuspect].nombre}`);
+
+		showAssasin();
+	}
+};
+
+let showAssasin = () => {
+	let column = document.createElement("div");
+
+	id_assasin = localStorage.getItem("id_assasin");
+
+	containerCharacters.innerHTML = "";
+
+	column.className = "col-md-4 mt-3";
+	column.id = `character-${suspectsArray[id_assasin].id}`;
+	column.innerHTML = `<div class="card" style="width: 18rem;">
+  <img src="./characters/${suspectsArray[id_assasin].name_image}.png" id="imgId-${suspectsArray[id_assasin].id}" class="card-img-top " alt="...">
+  <div class="card-body">
+    <h5 class="card-title">${suspectsArray[id_assasin].nombre}</h5>
+    <a href="#" id="btn-possAssesin-${suspectsArray[id_assasin].id}" class="btn btn-primary">tú fuiste</a>
+  </div>
+</div>`;
+
+	containerCharacters.append(column);
+};
+
+let paintingCharacters = (arrSuspects) => {
+	// console.log("entro a paintingCharacters", arrSuspects);
+
+	containerCharacters.innerHTML = "";
+
+	console.log("containerCharacters", containerCharacters);
 
 	arrSuspects.forEach((character) => {
 		let column = document.createElement("div");
-		column.className = "col-md-2 mt-3";
+
+		column.className = "col-md-4 mt-3";
 		column.id = `character-${character.id}`;
 		column.innerHTML = `<div class="card" style="width: 18rem;">
   <img src="./characters/${character.name_image}.png" id="imgId-${character.id}" class="card-img-top " alt="...">
   <div class="card-body">
     <h5 class="card-title">${character.nombre}</h5>
-    <a href="#" class="btn btn-primary">Go somewhere</a>
+    <a href="#" id="btn-possAssesin-${character.id}" class="btn btn-primary">tú fuiste</a>
   </div>
 </div>`;
 
 		containerCharacters.append(column);
-		i++;
+
+		let btnAccuse = document.getElementById(`btn-possAssesin-${character.id}`);
+
+		// console.log("btnAccuse", btnAccuse);
+
+		btnAccuse.onclick = () => checkAssasin(arrSuspects, character.id);
 	});
 };
 
 let matchSuspects = (idCharacter) => {
-	let num = parseInt(idCharacter);
+	let num = String(idCharacter);
 
-	let dide = `imgId-${num}`;
+	let idLlega = `imgId-${num}`;
 
-	console.log("dide", dide);
+	console.log("dide", idLlega);
 
-	blurCharacter = document.getElementById("imgId-2");
-	console.log("blurCharacter---->", blurCharacter);
+	let blurCharacter = "";
+
+	blurCharacter = document.getElementById(idLlega);
+
+	console.log("elemento sostenido", blurCharacter);
 	blurCharacter.classList = "blur-image";
 };
 
@@ -291,15 +425,40 @@ let play = (arrToPlay) => {
 	btn.onclick = () => menu(arrToPlay);
 };
 
+let blur = () => {
+	let btn_2 = document.getElementById("btnBlur");
+	btn_2.onclick = () => matchSuspects();
+};
+
+let genereMistery = (arrCompleteDied) => {
+	let numAssesin = parseInt(doRandom(arrCompleteDied[0]));
+
+	let numWeapon = parseInt(doRandom(weaponsArray));
+	let numRoom = parseInt(doRandom(roomsArray));
+
+	localStorage.setItem("id_assasin", numAssesin);
+	localStorage.setItem("id_died", arrCompleteDied[1]);
+	localStorage.setItem("id_weapon", numWeapon);
+	localStorage.setItem("id_room", numRoom);
+};
+
 let main = () => {
 	arrToPlay = genereAssesinMurder();
-	console.log("arrToPlay", arrToPlay[0][0].nombre);
+	console.log("arrToPlay", arrToPlay[0], "arrToPlay-1", arrToPlay[1]);
+
+	genereMistery(arrToPlay);
 
 	// menu(arrToPlay);
 
+	initElements();
+
+	generateListSuspects(arrToPlay[0]);
+
 	paintingCharacters(arrToPlay[0]);
 
-	play(arrToPlay);
+	// play(arrToPlay);
+
+	// blur();
 };
 
 main();

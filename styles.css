@@ -1,7 +1,28 @@
+@import url("https://fonts.googleapis.com/css2?family=Rubik:wght@300;400;500;600;900&display=swap");
+
 body {
-	background-color: blueviolet !important;
+	background: #3c3c3c;
 }
 
 .blur-image {
 	filter: blur(11px);
+}
+
+.colum-list-suspects {
+	background-color: #555;
+	padding: 2%;
+}
+
+.list-suspects {
+	font-family: "Rubik", sans-serif;
+	color: white;
+}
+
+.margin-5 {
+	margin-top: 2%;
+}
+.tit-list-suspects {
+	color: tomato;
+	font-size: 18px;
+	font-weight: bold;
 }
